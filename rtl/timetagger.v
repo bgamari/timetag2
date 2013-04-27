@@ -9,7 +9,7 @@ module timetagger (
                    output [CHANNEL_COUNT*RAW_COUNT-1:0] raw
                    );
 
-   parameter CHANNEL_COUNT = 1;   // Number of channels
+   parameter CHANNEL_COUNT = 2;   // Number of channels
    parameter CARRY_COUNT = 124;   // Number of CARRY4 elements per channel
    parameter RAW_COUNT = 9;       // Number of raw output bits
    parameter FP_COUNT = 13;       // Number of fractional part bits
@@ -36,22 +36,22 @@ module timetagger (
          .g_RAW_COUNT(RAW_COUNT),
          .g_FP_COUNT(FP_COUNT)
         )
-   tdcm (.clk_i(clk_i),
-         .reset_i(reset_i),
-         .ready_o(tdc_ready),
-
-         .cc_rst_i(tdc_reg[0]),
-         .cc_cy_o(cc_cy),
-
-         .deskew_i(deskew),
-         .signal_i(signal_i),
-         .calib_i(calib_i),
-
-         .detect_o(detect),
-         .polarity_o(polarity),
-         .raw_o(raw),
-         .fp_o(fp)
-         );
+   cmp_tdc (.clk_i(clk_i),
+            .reset_i(reset_i),
+            .ready_o(tdc_ready),
+            
+            .cc_rst_i(tdc_reg[0]),
+            .cc_cy_o(cc_cy),
+            
+            .deskew_i(deskew),
+            .signal_i(signal_i),
+            .calib_i(calib_i),
+            
+            .detect_o(detect),
+            .polarity_o(polarity),
+            .raw_o(raw),
+            .fp_o(fp)
+            );
         
 endmodule
 
