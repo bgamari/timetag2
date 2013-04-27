@@ -1,0 +1,3 @@
+[submodule "tdc-core"]
+	path = tdc-core
+	url = git://ohwr.org/hdl-core-lib/tdc-core.git
