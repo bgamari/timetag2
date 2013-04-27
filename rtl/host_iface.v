@@ -19,14 +19,12 @@ module host_iface(
                   input               clk_i,
                   input               reset_i,
 
-                  //   Outgoing data (to host)
-                  input [7:0]         out_data_i,
-                  output [N_SRCS-1:0] out_sel_o,
-                  input [N_SRCS-1:0]  out_req_i,
-                  output              out_ack_o,
-                  output              out_rdy_o,
+                  // Outgoing data (to host)
+                  input [7:0]         omux_data_i,
+                  output [N_SRCS-1:0] omux_sel_o,
+                  input [N_SRCS-1:0]  omux_req_i,
 
-                  //   Incoming data (from host)
+                  // Register interface
                   output [15:0]       reg_addr_o,
                   inout [31:0]        reg_data_io,
                   output              reg_wr_o

@@ -1,15 +1,25 @@
 module system (
+               // Clock and control
                input        clkin_p,
                input        clkin_n,
                input        reset_i,
+               output [3:0] led,
 
+               // FT2232 interface
+               input        nrxf_i,
+               input        ntxe_i,
+               output       nrd_o,
+               output       wr_o,
+               output       si_o,
+               inout [7:0]  d_io,
+
+               // TDC input
                input [1:0]  calib_i,
                input [1:0]  signal_i,
 
+               // TDC output
                output [1:0] detect,
-
-               output [3:0] led,
-
+               output [1:0] polarity,
 	       output       test_clk_oe_n,
 	       output       test_clk_p,
 	       output       test_clk_n,
@@ -29,15 +39,27 @@ module system (
 
    timetagger tdc (.clk_i(sys_clk),
                    .reset_i(reset_i),
+
+                   .nrxf_i(nrxf_i),
+                   .ntxe_i(ntxe_i),
+                   .nrd_o(nrd_o),
+                   .wr_o(wr_o),
+                   .si_o(si_i),
+                   .d_io(d_io),
+                   
                    .signal_i(tdc_signal),
-                   .calib_i(tdc_calib)
+                   .calib_i(tdc_calib),
+
+                   .raw(raw),
+                   .detect(detect),
+                   .polarity(polarity)
                    );
    
    wire                     cal_clk16x;
    wire                     cal_clk;
    wire                     test_clk;
    tdc_ringosc #(.g_LENGTH(31))
-   calib_osc (.en_i(~sys_rst), .clk_o(cal_clk16x));
+   calib_osc (.en_i(~reset_i), .clk_o(cal_clk16x));
    
    // Divide down calibration clock
    reg [18:0]               cal_clkdiv;
