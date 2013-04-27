@@ -60,7 +60,7 @@ module ft2232(
             if (~nrxf_i)
               state <= 3'd01;
             else if (~ntxe_i & out_req_i)
-              state <= 3'd02;
+              state <= 3'd03;
          end
 
        // Read incoming data
