@@ -66,4 +66,6 @@ module system (
 	                   .O(tdc_signal[1])
                            );
 
+   assign led = 1;
+
 endmodule
