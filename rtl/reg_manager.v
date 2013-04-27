@@ -76,7 +76,7 @@ module reg_manager(
 	       8:   state <= 9;
 
 	       // Write reply to host
-               9:   if (omux_sel_i) state <= 9;
+               9:   if (omux_sel_i) state <= 10;
                10:  if (omux_sel_i) state <= 11;  // 1st byte
 	       11:  if (omux_sel_i) state <= 12;  // 2nd byte
 	       12:  if (omux_sel_i) state <= 13;  // 3rd byte
