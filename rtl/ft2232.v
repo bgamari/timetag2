@@ -83,9 +83,10 @@ module ft2232(
      endcase 
    end
 
-   assign nrd_o = state == 3'd01;
-   assign wr_o = state == 3'd04;
-   assign d_io = (state == 3'd03 || state == 3'd04) ? out_data_i : 8'bZ;
+   assign nrd_o = state != 3'd01;
+   assign wr_o = state != 3'd04;
+   assign d_io = (state == 3'd03 || state == 3'd04) ? out_data_i : 8'bZZ;
+   assign si_o = 1'b1;
 
    assign out_ack_o = state == 3'd04;
    assign in_rdy_o = state == 3'd01;
