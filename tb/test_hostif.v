@@ -49,6 +49,24 @@ module test_hostif;
 	.reset_i(reset_i),
 	.value_o(reg1_value)
 	);
+
+   readonly_register #(.ADDR(16'h2))
+   reg2(.reg_clk_i(clk_i),
+	.reg_addr_i(reg_addr_o),
+	.reg_data_io(reg_data_io),
+	.reg_wr_i(reg_wr_o),
+	.value_i(32'hfeedbeef)
+	);
+
+   counter_register #(.ADDR(16'h3))
+   reg3(.reg_clk_i(clk_i),
+	.reg_addr_i(reg_addr_o),
+	.reg_data_io(reg_data_io),
+	.reg_wr_i(reg_wr_o),
+	.reset_i(reset_i),
+        .increment_clk_i(clk_i),
+        .increment_i(1'b1)
+	);
    
    initial clk_i = 0;
    always #10 clk_i = ~clk_i;
@@ -116,8 +134,12 @@ module test_hostif;
       #50 reset_i = 0;
 
       // Wait 100 ns for global reset to finish
-      #100 reg_cmd(1, 16'h1, 32'hdeadbeef, temp);
-      #200 reg_cmd(1, 16'h1, 32'h0000ffff, temp);
+      #100 reg_cmd(1, 16'h1, 32'hdeadbeef, temp);   // write #1
+      #200 reg_cmd(1, 16'h1, 32'h0000ffff, temp);   // write #2
+      #300 reg_cmd(1, 16'h2, 32'h0000ffff, temp);   // read-only register
+      #300 reg_cmd(0, 16'h3, 32'hffffffff, temp);   // counter register read
+      #300 reg_cmd(1, 16'h3, 32'hffffffff, temp);   // counter register reset
+      #400 reg_cmd(1, 16'h10, 32'h0000ffff, temp);  // non-existent register
    end
    
 
