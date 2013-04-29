@@ -98,7 +98,8 @@ endmodule
  * When a writer wants to write, he sets his bit in omux_req_i. When
  * the mux is ready to take his data, it sets his omux_sel_o bit at
  * which point he drives omux_data_i with the data to write. When the
- * sender has finished, he should de-assert his request pin.
+ * sender has finished, he should de-assert his request pin as he
+ * sends the last byte.
  */
 module out_mux(
                input               clk_i,
@@ -142,13 +143,15 @@ module out_mux(
 
                // send a byte
                1 :
-                 begin
-                    if (~omux_req_i[current_src]) state <= 0;
-                    else state <= 2;
-                 end
+                 if (~omux_req_i[current_src])
+                   state <= 0;
+                 else
+                   state <= 2;
                
                // wait for ack
-               2 : if (out_ack_i) state <= 1;
+               2 :
+                 if (out_ack_i)
+                   state <= omux_req_i[current_src] ? 1 : 0;
                     
             endcase
      end

@@ -76,7 +76,7 @@ module reg_manager(
 	       8:   state <= 9;
 
 	       // Write reply to host
-               9:   if (omux_sel_i) state <= 10;
+               9:   if (omux_sel_i) state <= 10;  // sentinel byte
                10:  if (omux_sel_i) state <= 11;  // 1st byte
 	       11:  if (omux_sel_i) state <= 12;  // 2nd byte
 	       12:  if (omux_sel_i) state <= 13;  // 3rd byte
@@ -86,15 +86,16 @@ module reg_manager(
              endcase
      end
 
-   assign reg_addr_o = (state==8 || state==9 || state==10 || state==11 || state==12) ? addr : 16'hXX;
+   assign reg_addr_o = (state==8 || state==9 || state==10 || state==11 || state==12 || state==13) ? addr : 16'hXX;
    assign reg_data_io = (state==8) ? data : 32'hZZ;
    assign reg_wr_o = (state==8) && wants_wr;
 
-   assign omux_data_o = (state==9)  ? reg_data_io[7:0] : 
-		        (state==10) ? reg_data_io[15:8] :
-		        (state==11) ? reg_data_io[23:16] :
-		        (state==12) ? reg_data_io[31:24] : 8'hZZ;
-   assign omux_req_o = state==9 || state==10 || state==11 || state==12 || state==13;
+   assign omux_data_o = (state==9)  ? 8'hab :
+                        (state==10) ? reg_data_io[7:0] : 
+		        (state==11) ? reg_data_io[15:8] :
+		        (state==12) ? reg_data_io[23:16] :
+		        (state==13) ? reg_data_io[31:24] : 8'hZZ;
+   assign omux_req_o = state==9 || state==10 || state==11 || state==12;
 
 endmodule
 
