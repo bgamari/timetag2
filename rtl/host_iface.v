@@ -153,7 +153,7 @@ module out_mux(
             endcase
      end
    
-   assign omux_sel_o = (state == 1) ? (1 << current_src) : 0;
+   assign omux_sel_o = (state == 2 && out_ack_i) ? (1 << current_src) : 0;
    assign out_o = omux_data_i;
    assign out_req_o = state == 1;
    
