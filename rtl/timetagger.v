@@ -73,7 +73,7 @@ module timetagger (
           .value_o(tdc_reg)
           );
    
-   wire [74:0]                                deskew;
+   wire [75:0]                                deskew;
    wire [75:0]                                fp;
    
    tdc #(.g_CHANNEL_COUNT(CHANNEL_COUNT),
@@ -98,12 +98,12 @@ module timetagger (
             .fp_o(fp),
 
             // debug interface
-            .lut_a_i(0),
-            .his_a_i(0),
-            .freeze_req_i(0),
-            .cs_next_i(0),
-            .calib_sel_i(0),
-            .oc_start_i(0)
+            .lut_a_i(9'b0),
+            .his_a_i(9'b0),
+            .freeze_req_i(1'b0),
+            .cs_next_i(1'b0),
+            .calib_sel_i(1'b0),
+            .oc_start_i(1'b0)
             );
         
    // Write-out

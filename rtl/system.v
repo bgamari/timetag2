@@ -15,7 +15,6 @@ module system (
 
                // TDC input
                input [1:0]  calib_i,
-               input [1:0]  signal_i,
 
                // TDC output
                output [1:0] detect,
@@ -31,6 +30,8 @@ module system (
 
    wire                     sys_clk;
    wire [1:0]               tdc_signal;
+   wire [1:0]               tdc_calib;
+   wire [17:0]              raw;
 
    IBUFGDS clkbuf(.I(clkin_p),
 	          .IB(clkin_n),
