@@ -111,7 +111,9 @@ module timetagger (
    reg [97:0]                                time_buffer;
    
    always @(posedge clk_i) begin
-      if (state == 0) begin
+      if (reset_i)
+        state <= 0;
+      else if (state == 0) begin
          if (detect != 0) begin
             time_buffer <= {polarity, detect, raw, fp};
             state <= 1;
