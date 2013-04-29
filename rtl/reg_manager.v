@@ -95,7 +95,7 @@ module reg_manager(
 		        (state==11) ? reg_data_io[15:8] :
 		        (state==12) ? reg_data_io[23:16] :
 		        (state==13) ? reg_data_io[31:24] : 8'hZZ;
-   assign omux_req_o = state==9 || state==10 || state==11 || state==12;
+   assign omux_req_o = state==9 || state==10 || state==11 || state==12 || state==13;
 
 endmodule
 
