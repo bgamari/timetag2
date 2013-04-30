@@ -25,7 +25,7 @@ module timetagger (
    parameter CARRY_COUNT = 124;   // Number of CARRY4 elements per channel
    parameter RAW_COUNT = 9;       // Number of raw output bits
    parameter FP_COUNT = 13;       // Number of fractional part bits
-   
+
    wire [15:0]                                          reg_addr;
    wire [31:0]                                          reg_data;
    wire                                                 reg_wr;
@@ -33,7 +33,7 @@ module timetagger (
    wire [7:0]                                           omux_data;
    wire                                                 omux_sel;
    wire                                                 omux_req;
-   
+
    readonly_register #(.ADDR(16'h1))
    version_reg(.reg_clk_i(clk_i),
                .reg_addr_i(reg_addr),
@@ -41,7 +41,7 @@ module timetagger (
                .reg_wr_i(reg_wr),
                .value_i(32'h01)
                );
-   
+
    host_iface hostif(.nrxf_i(nrxf_i),
                      .ntxe_i(ntxe_i),
                      .nrd_o(nrd_o),
@@ -72,10 +72,10 @@ module timetagger (
           .reset_i(reset_i),
           .value_o(tdc_reg)
           );
-   
+
    wire [75:0]                                deskew;
    wire [75:0]                                fp;
-   
+
    tdc #(.g_CHANNEL_COUNT(CHANNEL_COUNT),
          .g_CARRY4_COUNT(CARRY_COUNT),
          .g_RAW_COUNT(RAW_COUNT),
@@ -84,14 +84,14 @@ module timetagger (
    cmp_tdc (.clk_i(clk_i),
             .reset_i(reset_i),
             .ready_o(tdc_ready),
-            
+
             .cc_rst_i(tdc_reg[0]),
             .cc_cy_o(cc_cy),
-            
+
             .deskew_i(deskew),
             .signal_i(signal_i),
             .calib_i(calib_i),
-            
+
             .detect_o(detect),
             .polarity_o(polarity),
             .raw_o(raw),
@@ -105,7 +105,7 @@ module timetagger (
             .calib_sel_i(1'b0),
             .oc_start_i(1'b0)
             );
-        
+
    record_buffer recbuf (.clk_i(clk_i),
                          .reset_i(reset_i),
                          .rec_i({polarity, detect, raw, fp}),
@@ -119,7 +119,7 @@ module timetagger (
    // Write-out
    reg [3:0]                                 state;
    reg [97:0]                                time_buffer;
-   
+
    always @(posedge clk_i) begin
       if (reset_i)
         state <= 0;
@@ -138,11 +138,10 @@ module timetagger (
          end
       end
    end
-   
+
    // FIXME
    assign omux_data = state == 0 ? 8'hZ : time_buffer[7:0];
    assign omux_req = state != 0;
     */
-    
-endmodule
 
+endmodule
