@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 /* host_iface: Host interface
- * 
+ *
  * This module is responsible for providing a reasonably clean
  * abstraction of the FT2232 interface to the tagger logic.
  */
@@ -14,7 +14,7 @@ module host_iface(
                   output              si_o,
                   inout [7:0]         d_io,
 
-                  
+
                   // Internal interface
                   input               clk_i,
                   input               reset_i,
@@ -32,12 +32,12 @@ module host_iface(
 
    // number of output sources (other than reg_manager)
    parameter N_SRCS = 1;
-   
+
    wire [7:0]                         in_data;
    wire [7:0]                         out_data;
    wire                               out_req;
    wire                               out_ack;
-   
+
    ft2232 ft(.nrxf_i(nrxf_i),
              .ntxe_i(ntxe_i),
              .nrd_o(nrd_o),
@@ -59,7 +59,7 @@ module host_iface(
    wire [7:0]                       regman_omux_data;
    wire [N_SRCS:0]                  omux_req;
    wire [N_SRCS:0]                  omux_sel;
-   
+
    out_mux #(.N_SRCS(N_SRCS+1))
    outmux(.clk_i(clk_i),
           .reset_i(reset_i),
@@ -79,32 +79,32 @@ module host_iface(
 
    reg_manager regman(.clk_i(clk_i),
                       .reset_i(reset_i),
-                      
+
                       .in_data_i(in_data),
                       .in_rdy_i(in_rdy),
- 
+
                       .omux_data_o(regman_omux_data),
                       .omux_req_o(omux_req[0]),
                       .omux_sel_i(omux_sel[0]),
- 
+
                       .reg_addr_o(reg_addr_o),
                       .reg_data_io(reg_data_io),
                       .reg_wr_o(reg_wr_o)
                       );
-   
+
 endmodule
 
 
 /* output multiplexer
- * 
+ *
  * Both register manager replies and the data stream need to be
  * multiplexed through the USB interface.
- * 
+ *
  * When a writer wants to write, he sets his bit in omux_req_i. When
  * the mux is ready to take his data, it sets his omux_sel_o bit at
  * which point he drives omux_data_i with the data to write. When the
  * sender has finished, he should de-assert his request pin.
- * 
+ *
  */
 module out_mux(
                input               clk_i,
@@ -114,23 +114,23 @@ module out_mux(
                output [7:0]        out_o,
                output              out_req_o,
                input               out_ack_i,
-               
+
                // Internal writer interface
                input [7:0]         omux_data_i,
                input [N_SRCS-1:0]  omux_req_i,
                output [N_SRCS-1:0] omux_sel_o
                );
-   
+
    parameter N_SRCS = 1;
 
    initial current_src = 0;
    reg [$clog2(N_SRCS):0]             current_src;
    reg [$clog2(N_SRCS):0]             j;
-   
+
    initial state = 0;
    reg [1:0]                          state;
    reg [7:0]                          out_data;
-   
+
    always @(posedge clk_i)
      begin
         if (reset_i) begin
@@ -139,7 +139,7 @@ module out_mux(
         end
         else case (state)
                // idle
-               0 : 
+               0 :
                   if (omux_req_i != 0) begin
                      state <= 1;
                      for (j=0; j < N_SRCS; j = j + 1)
@@ -154,17 +154,17 @@ module out_mux(
                    out_data <= omux_data_i;
                  end else
                    state <= 0;
-               
+
                // wait for ack
                2 :
                  if (out_ack_i)
                    state <= 1;
-                    
+
             endcase
      end
-   
+
    assign omux_sel_o = (state == 1) ? (1 << current_src) : 0;
    assign out_o = out_data;
    assign out_req_o = state == 1 && omux_req_i[current_src];
-   
+
 endmodule
