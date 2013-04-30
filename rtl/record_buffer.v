@@ -93,17 +93,17 @@ module record_buffer(
                read_state <= 2;
             end
 
-          // read out bytes of a record
+          // read out bytes of record
           2 :
-            if (read_empty) begin
-               read_state <= 0;    // buffer empty
-            end else if (read_pos < WIDTH/8) begin
+            if (read_empty) begin                   // buffer empty
+               read_state <= 0;
+            end else if (read_pos < WIDTH/8) begin  // More to read
                if (omux_sel_i) begin
                   cur_rec <= cur_rec >> 8;
                   read_pos <= read_pos + 1;
                end
-            end else begin
-               read_state <= 1;   // done with record
+            end else begin                          // done with record
+               read_state <= 1;
             end
 
         endcase
