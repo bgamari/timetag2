@@ -115,33 +115,4 @@ module timetagger (
                          .omux_data_o(omux_data)
                          );
 
-   /*
-   // Write-out
-   reg [3:0]                                 state;
-   reg [97:0]                                time_buffer;
-
-   always @(posedge clk_i) begin
-      if (reset_i)
-        state <= 0;
-      else if (state == 0) begin
-         if (detect != 0) begin
-            time_buffer <= {polarity, detect, raw, fp};
-            state <= 1;
-         end
-      end
-      else if (state == 16)
-        state <= 0;
-      else begin
-         if (omux_sel) begin
-            time_buffer <= time_buffer >> 8;
-            state <= state + 1;
-         end
-      end
-   end
-
-   // FIXME
-   assign omux_data = state == 0 ? 8'hZ : time_buffer[7:0];
-   assign omux_req = state != 0;
-    */
-
 endmodule
