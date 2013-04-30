@@ -36,15 +36,15 @@ module record_buffer(
                             .g_almost_empty_threshold(0),
                             .g_almost_full_threshold(0),
                             .g_show_ahead(1))
-        fifo1(.rst_n_i(~reset_i),
-              .clk_i(clk_i),
-              .d_i(rec_i),
-              .we_i(we_i && write_buf==i && ~full),
-              .q_o(out),
-              .rd_i(rd && read_buf==i),
-              .empty_o(empty),
-              .full_o(full)
-              );
+        fifo(.rst_n_i(~reset_i),
+             .clk_i(clk_i),
+             .d_i(rec_i),
+             .we_i(we_i && write_buf==i && ~full),
+             .q_o(out),
+             .rd_i(rd && read_buf==i),
+             .empty_o(empty),
+             .full_o(full)
+             );
         assign read_out = read_buf == i ? out : {(WIDTH){1'bZ}};
         assign read_empty = read_buf == i ? empty : 1'bz;
         assign read_full = read_buf == i ? full : 1'bz;
@@ -72,6 +72,7 @@ module record_buffer(
     end else begin
 
         // (full && ~empty) ensures we handle reset correctly
+        // (the FIFO holds full high during reset)
         if (write_full && ~write_empty && next_buffer(write_buf) != read_buf)
           write_buf <= next_buffer(write_buf);
 
