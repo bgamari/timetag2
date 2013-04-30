@@ -110,9 +110,9 @@ module timetagger (
                          .reset_i(reset_i),
                          .rec_i({polarity, detect, raw, fp}),
                          .we_i(detect != 0),
-                         .omux_req(omux_req),
-                         .omux_sel(omux_sel),
-                         .omux_data(omux_data)
+                         .omux_req_o(omux_req),
+                         .omux_sel_i(omux_sel),
+                         .omux_data_o(omux_data)
                          );
 
    /*
