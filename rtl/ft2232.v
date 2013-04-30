@@ -2,21 +2,21 @@
 
 module ft2232(
               // FT2232 interface
-              input       nrxf_i,
-              input       ntxe_i,
-              output      nrd_o,
-              output      wr_o,
-              output      si_o,
-              inout [7:0] d_io,
+              input        nrxf_i,
+              input        ntxe_i,
+              output       nrd_o,
+              output       wr_o,
+              output       si_o,
+              inout [7:0]  d_io,
 
               // Internal interface
-              input       clk_i,
-              input       reset_i,
+              input        clk_i,
+              input        reset_i,
 
               //   Outgoing data (to host)
-              input [7:0] out_data_i,
-              input       out_req_i,
-              output      out_ack_o,
+              input [7:0]  out_data_i,
+              input        out_req_i,
+              output       out_ack_o,
 
               //   Incoming data (from host)
               output [7:0] in_data_o,
@@ -29,7 +29,7 @@ module ft2232(
    initial active_out_buffer = 0;
    reg                     active_out_buffer;
    wire [7:0]              out_d;
-   
+
    // Scale clock down for FT2232
    initial rescaled_clk = 0;
    reg                     rescaled_clk;
@@ -45,11 +45,11 @@ module ft2232(
            wait_state <= wait_state - 1;
         end
      end
-   
+
    // FT2232 interface state machine
    initial state = 0;
    reg [2:0]               state;
-   
+
    always @(posedge clk_i)
    begin
       if (reset_i) state <= 0;
@@ -71,7 +71,7 @@ module ft2232(
             if (nrxf_i) state <= 3'd00;
             else state <= 3'd01;
         end
-            
+
        // Write outgoing data
        3'd03 : state <= 3'd04;
        // Latch outgoing data
@@ -80,7 +80,7 @@ module ft2232(
             if (~ntxe_i & out_req_i) state <= 3'd03;
             else state <= 3'd00;
          end
-     endcase 
+     endcase
    end
 
    assign nrd_o = state != 3'd01;
@@ -91,5 +91,5 @@ module ft2232(
    assign out_ack_o = state == 3'd04;
    assign in_rdy_o = state == 3'd01;
    assign in_data_o = d_io;
-   
+
 endmodule
