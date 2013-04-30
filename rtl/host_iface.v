@@ -37,6 +37,7 @@ module host_iface(
    wire [7:0]                         out_data;
    wire                               out_req;
    wire                               out_ack;
+   wire                               out_done;
 
    ft2232 ft(.nrxf_i(nrxf_i),
              .ntxe_i(ntxe_i),
@@ -70,7 +71,8 @@ module host_iface(
 
           .out_o(out_data),
           .out_req_o(out_req),
-          .out_ack_i(out_ack)
+          .out_ack_i(out_ack),
+          .out_done_o(out_done)
           );
 
    // register manager is source 0
@@ -114,6 +116,7 @@ module out_mux(
                output [7:0]        out_o,
                output              out_req_o,
                input               out_ack_i,
+               output              out_done_o,
 
                // Internal writer interface
                input [7:0]         omux_data_i,
@@ -166,5 +169,6 @@ module out_mux(
    assign omux_sel_o = (state == 1) ? (1 << current_src) : 0;
    assign out_o = out_data;
    assign out_req_o = state == 1 && omux_req_i[current_src];
+   assign out_done_o = state == 1 && ~omux_req_i[current_src];
 
 endmodule

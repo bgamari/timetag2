@@ -17,6 +17,7 @@ module ft2232(
               input [7:0]  out_data_i,
               input        out_req_i,
               output       out_ack_o,
+              input        out_done_i,
 
               //   Incoming data (from host)
               output [7:0] in_data_o,
@@ -86,7 +87,7 @@ module ft2232(
    assign nrd_o = state != 3'd01;
    assign wr_o = state != 3'd04;
    assign d_io = (state == 3'd03 || state == 3'd04) ? out_data_i : 8'bZZ;
-   assign si_o = 1'b1;
+   assign si_o = out_done_i;
 
    assign out_ack_o = state == 3'd04;
    assign in_rdy_o = state == 3'd01;
