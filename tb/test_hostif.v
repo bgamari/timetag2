@@ -69,16 +69,17 @@ module test_hostif;
         .increment_i(1'b1)
 	);
 
-   reg [127:0] recbuf_rec_i;
+   reg [15:0] recbuf_rec_i;
    reg         recbuf_we_i;
-   record_buffer recbuf(.clk_i(clk_i),
-                        .reset_i(reset_i),
-                        .rec_i(recbuf_rec_i),
-                        .we_i(recbuf_we_i),
-                        .omux_req_o(omux_req_i[0]),
-                        .omux_sel_i(omux_sel_o[0]),
-                        .omux_data_o(omux_data_i)
-                        );
+   record_buffer #(.WIDTH(16))
+   recbuf(.clk_i(clk_i),
+          .reset_i(reset_i),
+          .rec_i(recbuf_rec_i),
+          .we_i(recbuf_we_i),
+          .omux_req_o(omux_req_i[0]),
+          .omux_sel_i(omux_sel_o[0]),
+          .omux_data_o(omux_data_i)
+          );
    
 
    initial clk_i = 0;
@@ -153,10 +154,14 @@ module test_hostif;
       #300 reg_cmd(1, 16'h3, 32'hffffffff, temp);   // counter register reset
       #400 reg_cmd(1, 16'h10, 32'h0000ffff, temp);  // non-existent register
 
-      #1000 recbuf_rec_i = 128'heaeaeaeaeeaeaeaeaeaeaeaeaedaedaedeadaedeadeadeade;
-      recbuf_we_i = 1;
-      $display("hi");
-      #2000 recbuf_we_i = 0;
+      #1000 recbuf_rec_i = 16'h0;
+      for (temp=0; temp<128; temp=temp+1) begin
+         #20 recbuf_we_i = 1;
+         recbuf_rec_i = recbuf_rec_i + 1;
+      end
+      
+      recbuf_we_i = 0;
+      $display("done");
       
    end
    
