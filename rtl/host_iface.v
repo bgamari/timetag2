@@ -129,6 +129,7 @@ module out_mux(
    
    initial state = 0;
    reg [1:0]                          state;
+   reg [7:0]                          out_data;
    
    always @(posedge clk_i)
      begin
@@ -148,9 +149,10 @@ module out_mux(
 
                // send a byte
                1 :
-                 if (omux_req_i[current_src])
+                 if (omux_req_i[current_src]) begin
                    state <= 2;
-                 else
+                   out_data <= omux_data_i;
+                 end else
                    state <= 0;
                
                // wait for ack
@@ -161,8 +163,8 @@ module out_mux(
             endcase
      end
    
-   assign omux_sel_o = (state == 2 && out_ack_i) ? (1 << current_src) : 0;
-   assign out_o = omux_data_i;
+   assign omux_sel_o = (state == 1) ? (1 << current_src) : 0;
+   assign out_o = out_data;
    assign out_req_o = state == 1 && omux_req_i[current_src];
    
 endmodule
