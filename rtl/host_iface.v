@@ -30,6 +30,7 @@ module host_iface(
                   output              reg_wr_o
                   );
 
+   // number of output sources (other than reg_manager)
    parameter N_SRCS = 1;
    
    wire [7:0]                         in_data;
@@ -55,15 +56,15 @@ module host_iface(
              .in_rdy_o(in_rdy)
              );
 
-   wire [7:0]                         omux_data;
-   wire [N_SRCS-1:0]                  omux_req;
-   wire [N_SRCS-1:0]                  omux_sel;
+   wire [7:0]                       regman_omux_data;
+   wire [N_SRCS:0]                  omux_req;
+   wire [N_SRCS:0]                  omux_sel;
    
-   out_mux #(.N_SRCS(N_SRCS))
+   out_mux #(.N_SRCS(N_SRCS+1))
    outmux(.clk_i(clk_i),
           .reset_i(reset_i),
 
-          .omux_data_i(omux_data),
+          .omux_data_i(omux_sel[0] ? regman_omux_data : omux_data_i),
           .omux_req_i(omux_req),
           .omux_sel_o(omux_sel),
 
@@ -72,13 +73,17 @@ module host_iface(
           .out_ack_i(out_ack)
           );
 
+   // register manager is source 0
+   assign omux_sel_o = omux_sel[N_SRCS:1];
+   assign omux_req[N_SRCS:1] = omux_req_i;
+
    reg_manager regman(.clk_i(clk_i),
                       .reset_i(reset_i),
                       
                       .in_data_i(in_data),
                       .in_rdy_i(in_rdy),
  
-                      .omux_data_o(omux_data),
+                      .omux_data_o(regman_omux_data),
                       .omux_req_o(omux_req[0]),
                       .omux_sel_i(omux_sel[0]),
  

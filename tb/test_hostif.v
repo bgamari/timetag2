@@ -7,8 +7,8 @@ module test_hostif;
    reg ntxe_i;
    reg clk_i;
    reg reset_i;
-   reg [7:0] omux_data_i;
-   reg [0:0] omux_req_i;
+   wire [7:0] omux_data_i;
+   wire [0:0] omux_req_i;
 
    // Outputs
    wire      nrd_o;
@@ -40,6 +40,7 @@ module test_hostif;
 		   .reg_wr_o(reg_wr_o)
 	           );
 
+   wire [31:0] reg1_value;
    register #(.ADDR(16'h1))
    reg1(.reg_clk_i(clk_i),
 	.reg_addr_i(reg_addr_o),
@@ -67,7 +68,19 @@ module test_hostif;
         .increment_clk_i(clk_i),
         .increment_i(1'b1)
 	);
+
+   reg [127:0] recbuf_rec_i;
+   reg         recbuf_we_i;
+   record_buffer recbuf(.clk_i(clk_i),
+                        .reset_i(reset_i),
+                        .rec_i(recbuf_rec_i),
+                        .we_i(recbuf_we_i),
+                        .omux_req_o(omux_req_i[0]),
+                        .omux_sel_i(omux_sel_o[0]),
+                        .omux_data_o(omux_data_i)
+                        );
    
+
    initial clk_i = 0;
    always #10 clk_i = ~clk_i;
    
@@ -128,10 +141,9 @@ module test_hostif;
       // Initialize Inputs
       nrxf_i = 1; // RX empty
       ntxe_i = 0; // TX ready
-      omux_data_i = 0;
-      omux_req_i = 0;
+      recbuf_we_i = 0;
       reset_i = 1;
-      #50 reset_i = 0;
+      #200 reset_i = 0;
 
       // Wait 100 ns for global reset to finish
       #100 reg_cmd(1, 16'h1, 32'hdeadbeef, temp);   // write #1
@@ -140,6 +152,12 @@ module test_hostif;
       #300 reg_cmd(0, 16'h3, 32'hffffffff, temp);   // counter register read
       #300 reg_cmd(1, 16'h3, 32'hffffffff, temp);   // counter register reset
       #400 reg_cmd(1, 16'h10, 32'h0000ffff, temp);  // non-existent register
+
+      #1000 recbuf_rec_i = 128'heaeaeaeaeeaeaeaeaeaeaeaeaedaedaedeadaedeadeadeade;
+      recbuf_we_i = 1;
+      $display("hi");
+      #2000 recbuf_we_i = 0;
+      
    end
    
 

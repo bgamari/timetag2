@@ -106,6 +106,16 @@ module timetagger (
             .oc_start_i(1'b0)
             );
         
+   record_buffer recbuf (.clk_i(clk_i),
+                         .reset_i(reset_i),
+                         .rec_i({polarity, detect, raw, fp}),
+                         .we_i(detect != 0),
+                         .omux_req(omux_req),
+                         .omux_sel(omux_sel),
+                         .omux_data(omux_data)
+                         );
+
+   /*
    // Write-out
    reg [3:0]                                 state;
    reg [97:0]                                time_buffer;
@@ -119,7 +129,7 @@ module timetagger (
             state <= 1;
          end
       end
-      else if (state == 6)
+      else if (state == 16)
         state <= 0;
       else begin
          if (omux_sel) begin
@@ -132,6 +142,7 @@ module timetagger (
    // FIXME
    assign omux_data = state == 0 ? 8'hZ : time_buffer[7:0];
    assign omux_req = state != 0;
+    */
     
 endmodule
 
