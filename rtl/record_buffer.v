@@ -18,8 +18,8 @@ module record_buffer(
    reg [$clog2(NBUF)-1:0]         read_buf;
 
    wire                           rd;
-   wire [127:0]                   out;
-   
+   wire [WIDTH-1:0]               out;
+
    wire [WIDTH-1:0]               read_out;
    wire                           read_empty, read_full;
    wire                           write_empty, write_full;
@@ -30,7 +30,7 @@ module record_buffer(
         wire [WIDTH-1:0]   out;
         wire               empty;
         wire               full;
-        
+
         generic_sync_fifo #(.g_data_width(WIDTH),
                             .g_size(DEPTH),
                             .g_almost_empty_threshold(0),
@@ -51,7 +51,7 @@ module record_buffer(
         assign write_empty = write_buf == i ? empty : 1'bZ;
         assign write_full = write_buf == i ? full : 1'bZ;
      end // for (i=0; i<NBUF; i=i+1)
-   endgenerate 
+   endgenerate
 
    function [$clog2(NBUF)-1:0] next_buffer;
       input [$clog2(NBUF)-1:0] i;
@@ -59,7 +59,7 @@ module record_buffer(
          next_buffer = (i + 1) % NBUF;
       end
    endfunction
-    
+
    reg [1:0] read_state;
    reg [$clog2(WIDTH/8):0] read_pos; // oversized so comparisons work
    reg [WIDTH-1:0]         cur_rec;
@@ -80,9 +80,9 @@ module record_buffer(
           0 :
             if (read_empty && ~read_full && next_buffer(read_buf) != write_buf)
               read_buf <= next_buffer(read_buf);
-            else 
+            else
               read_state <= 1;
-          
+
           // start reading out record
           1 :
             if (read_empty) begin
@@ -92,7 +92,7 @@ module record_buffer(
                cur_rec <= read_out;
                read_state <= 2;
             end
-          
+
           // read out bytes of a record
           2 :
             if (read_empty) begin
@@ -108,11 +108,10 @@ module record_buffer(
 
         endcase
      end
-   
+
    assign rd = read_state == 1 && ~read_empty;
-                
+
    assign omux_req_o = (read_state == 1 || read_state == 2) && ~read_empty;
    assign omux_data_o = omux_sel_i ? cur_rec[7:0] : 8'hZ;
-   
-endmodule
 
+endmodule
