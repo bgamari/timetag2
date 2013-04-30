@@ -1,5 +1,14 @@
 `timescale 1ns / 1ps
 
+/* ft2232
+ *
+ * This module is responsible multiplexing the FT2232 data bus between
+ * in-bound requests and out-bound responses. We also need to ensure
+ * that the FT2232's rather conservative timing requirements are
+ * met. For this, we scale down the input clock by a factor of
+ * WAIT_STATES which must be set as a function of the input clock
+ * frequency.
+ */
 module ft2232(
               // FT2232 interface
               input        nrxf_i,
