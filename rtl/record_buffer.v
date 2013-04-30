@@ -1,3 +1,12 @@
+/* record_buffer
+ *
+ * This module is responsible for collecting fixed-width records into
+ * buffers of fixed size. When a buffer is full, it will (eventually)
+ * be read out byte-wise to the output multiplexer. The module can use
+ * arbitrarily many buffers which are used in a ring-buffer-like
+ * configuration.
+ *
+ */
 module record_buffer(
                      input clk_i,
                      input reset_i,
